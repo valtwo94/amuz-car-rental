@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue';
+import {ref, watchEffect} from 'vue';
 import {useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
@@ -10,22 +10,33 @@ const form = useForm({
     year: '',
     price: 0,
     company: '',
-    mileage: '',
+    mileage: 0,
     imageUrl: '',
     status: 'available',
 });
 
+const canSubmit = ref(false)
+
 const submitForm = () => {
     form.post(route('cars.store'), {
         onSuccess: () => {
-            // 폼이 성공적으로 제출되면 원하는 동작 수행
-            console.log('차량이 성공적으로 생성되었습니다.');
+            form.reset()
         },
         onFinish: () => {
-            // form.reset()
+
         }
     });
 };
+
+watchEffect(() => {
+    if(form.model.trim() !== "" && form.year.trim() !== ""&& form.price !== 0 && form.company.trim() !== "" && form.company.trim() !== ''&& form.mileage !== 0 && form.imageUrl.trim() !== "" ){
+        canSubmit.value = true
+    }else{
+        canSubmit.value = false
+    }
+})
+
+
 </script>
 
 <template>
@@ -83,8 +94,10 @@ const submitForm = () => {
             </div>
 
 
-            <div class="flex items-center justify-end mt-6 ">
-                <button type="submit" class="bg-blue-500 text-white p-2 rounded w-full">추가하기</button>
+            <div class="flex items-center justify-end mt-6">
+                <button type="submit" :class="{ 'bg-blue-500 text-white p-2 rounded w-full cursor-pointer hover:bg-blue-600': canSubmit, 'bg-gray-300 text-gray-500 p-2 rounded w-full cursor-not-allowed': !canSubmit }" :disabled="!canSubmit">
+                    추가하기
+                </button>
             </div>
         </form>
     </AuthenticatedLayout>

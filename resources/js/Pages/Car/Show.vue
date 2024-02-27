@@ -159,11 +159,9 @@ const calculateTotalPrice = () => {
 
 const onClickConfirmButton = () => {
     router.get(route('reservation'), {
-       reservation_id: store.state.temporaryReservationId
+        reservation_id: store.state.temporaryReservationId
     });
 }
-
-
 
 
 watch(reservationStartDate, (newValue, oldValue, onCleanup) => {
@@ -182,35 +180,36 @@ watch(reservationStartDate, (newValue, oldValue, onCleanup) => {
                 <p class="text-gray-600">이동거리 : {{ car.mileage.toLocaleString('ko') }}km</p>
                 <p class="text-gray-800 text-lg font-bold mb-4">일당 {{ car.price.toLocaleString('ko') }}원</p>
 
+                <div v-if="car.status ==='available' ">
+                    <div class="mb-4">
+                        <label for="reservationStartDate" class="block text-gray-600 text-sm font-medium mb-2">예약
+                            날짜:</label>
+                        <input v-model="reservationStartDate" @change="onChangeStartDate" type="date" :min="currentDay"
+                               id="reservationStartDate" name="reservationStartDate"
+                               class="w-full p-2 border rounded-md">
 
-                <div class="mb-4">
-                    <label for="reservationStartDate" class="block text-gray-600 text-sm font-medium mb-2">예약
-                        날짜:</label>
-                    <input v-model="reservationStartDate" @change="onChangeStartDate" type="date" :min="currentDay"
-                           id="reservationStartDate" name="reservationStartDate" class="w-full p-2 border rounded-md">
+                    </div>
 
-                </div>
+                    <div v-if="reservationStartDate" class="mb-4">
+                        <label for="reservationEndDate" class="block text-gray-600 text-sm font-medium mb-2">반환
+                            날짜:</label>
+                        <input v-model="reservationEndDate" @change="onChangeEndDate" type="date" :min="minimumEndDate"
+                               id="reservationEndDate" name="reservationEndDate" class="w-full p-2 border rounded-md">
+                    </div>
 
-                <div v-if="reservationStartDate" class="mb-4">
-                    <label for="reservationEndDate" class="block text-gray-600 text-sm font-medium mb-2">반환 날짜:</label>
-                    <input v-model="reservationEndDate" @change="onChangeEndDate" type="date" :min="minimumEndDate"
-                           id="reservationEndDate" name="reservationEndDate" class="w-full p-2 border rounded-md">
-                </div>
-
-                <div :class="{
+                    <div :class="{
                         'text-green-600': reservationMessage === '예약가능',
                         'text-red-600': reservationMessage === '예약불가',
                     }"
-                     class="mb-4"
-                >
-                    {{ reservationMessage }}
+                         class="mb-4"
+                    >
+                        {{ reservationMessage }}
+                    </div>
+
+                    <div class="mb-4">
+                        총 가격: {{ totalPrice.toLocaleString('ko') }} 원
+                    </div>
                 </div>
-
-                <div class="mb-4">
-                    총 가격: {{ totalPrice.toLocaleString('ko') }} 원
-                </div>
-
-
                 <div class="flex items-center justify-end mt-6 ">
                     <button @click="onClickConfirmButton" :class="{
                                 'bg-blue-500 text-white p-2 rounded w-full': canMakeReservation,
