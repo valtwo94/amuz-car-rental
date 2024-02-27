@@ -1,66 +1,84 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚗 렌트카 예약 서비스 구현
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 프로젝트 버전
 
-## About Laravel
+MY SQL => 8.0.22
+PHP => 8.3.3
+Node.js => 20.9.0
+Laravel => 9.52.16
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 프로젝트 설명
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+로그인 인증은 기본 Breeze로 Generate한 틀에서 약간 수정하여 만들었습니다.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+예약은 일단위 예약으로 구현을 했고, 날짜 선택시 10분 유효기간의 임시 예약으로 만들고 추가 정보 입력을 하면은 임시예약의 상태가 확정예약으로 바뀝니다.
 
-## Learning Laravel
+추가 정보 입력을 안하고 앱에서 이탈한 경우 임시 예약이 남아있는 부분은 스케쥴러를 이용하여 유효기간이 지나고 임시상태인 칼럼들을 정리합니다.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 프로젝트 실행
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+docker mysql image로 컨테이너를 띄우고 마이그레이션 커맨드
 
-## Laravel Sponsors
+`php artisan migrate`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+프로젝트 개발모드 실행 커맨드
 
-### Premium Partners
+`php artisan serve && npm run dev`
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+스케쥴러 테스트 커맨드
 
-## Contributing
+`php artisan schedule:run`
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Todo
 
-## Security Vulnerabilities
+- [x] **라라벨 프레임워크 설치 및 로컬 개발환경 구축**
+    - [Laravel Installation Guide](https://laravel.kr/docs/9.x/installation) 참고
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- [x] **Route 정의**
+    - [x] `/` -> name : list -> 등록된 차량 리스트 페이지
+    - [x] `/create` -> name : create -> 차량 등록 페이지
+    - [x] `/show/{id}` -> name : show -> 차량별 예약 정보 확인 페이지
+    - [x] `/reservation` -> name : reservation -> 차량 예약 페이지
 
-## License
+- [x] **Migration을 사용해 table 생성**
+    - [x] 테이블은 임의로 생성
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- [x] **Eloquent ORM에 postModel 만들기**
+    - [x] 생성된 테이블을 기반으로 Eloquent 모델 생성
+
+- [x] **Create Route에서 차량 등록 처리**
+    - [x] `/create` 라우트에서 차량 등록 기능 구현
+
+- [x] **List Route에서 Create된 차량 List 및 예약 가능 여부 확인 처리**
+    - [x] `/` 라우트에서 등록된 차량 목록과 예약 가능 여부 표시
+
+- [x] **List Route에서 차량 클릭 시 Show Route로 이동**
+    - [x] 클릭한 차량에 대한 예약 정보 확인을 위해 `/show/{id}` 라우트로 이동
+
+- [x] **Show Route에서 "예약" 버튼 클릭 시 Reservation Route로 이동**
+    - [x] 예약 가능 여부 확인 후, 예약 정보 입력을 위해 `/reservation` 라우트로 이동
+
+- [x] **Reservation Route에서 예약 시작일/시간, 종료일/시간 설정 및 중복 예약 처리**
+    - [x] 날짜 선택 시 중복 예약이 안되도록 처리
+
+- [x] **Frontend View 구현시 Tailwind & Inertia Vue 사용**
+    - [x] [Tailwind CSS](https://tailwindcss.com/) 및 [Inertia.js](https://inertiajs.com/)를 사용하여 프론트엔드 뷰 구현
+
+- [x] **추가 기능 (선택 사항)**
+    - [x] 회원가입, 로그인, 게시물 비밀번호 등의 기능 추가 가능
+
+
+
+    
+## 프로젝트 회고
+
+정통 MVC 프레임워크를 많이 만져본적은 없는데 Django하고 비슷한 느낌이었습니다. 
+구축되어있는 클래스에 대한 이해도를 높여나가면 활용도 있게 쓸 수 있을 것 같습니다.
+독특한 문법을 써서 코드 이해하는데는 애를 먹었지만 익숙해지다보니 괜찮게 느껴졌습니다.
+
+예약 시스템을 만들다보니 자연스럽게 이런 저런 라라벨 기능들을 많이 찾아서 써봤던 것 같습니다.
+아쉬운 점이 있다면 시간 예약까지 해보고 싶었는데 못했다는점
+

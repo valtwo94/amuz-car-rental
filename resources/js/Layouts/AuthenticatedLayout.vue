@@ -44,11 +44,6 @@ const showingNavigationDropdown = ref(false);
                                 </NavLink>
                             </div>
 
-                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('reservation')" :active="route().current('reservation')">
-                                    예약하기
-                                </NavLink>
-                            </div>
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
@@ -154,8 +149,11 @@ const showingNavigationDropdown = ref(false);
 
 
             <!-- Page Content -->
-            <main class="p-8 ">
-                <slot />
+            <main class="w-full flex flex-col items-center">
+                <div class="p-8 w-full max-w-7xl">
+                    <slot />
+                </div>
+
             </main>
         </div>
     </div>

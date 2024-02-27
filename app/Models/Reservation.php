@@ -15,7 +15,12 @@ class Reservation extends Model
         'car_id',
         'user_id',
         'confirmation_time',
-        'status'
+        'status',
+        'pickup_region',
+        'pay_method',
+        'pickup_time',
+        'cancellation_detail',
+        'total_price'
     ];
 
     // Relationships

@@ -1,6 +1,6 @@
 <script setup>
 import {computed, onMounted, ref, watch, watchEffect} from 'vue';
-import {usePage, Link} from '@inertiajs/vue3';
+import {usePage, Link, router} from '@inertiajs/vue3';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
 import dayjs from "dayjs";
@@ -36,17 +36,17 @@ const onChangeStartDate = (e) => {
         }
         const formStartDate = dayjs(reservationStartDate.value).format('YYYY-MM-DD HH:mm:ss')
         const formEndDate = dayjs(reservationEndDate.value).format('YYYY-MM-DD HH:mm:ss')
-
+        calculateTotalPrice()
         if (store.state.temporaryReservationId === -1) {
-            console.log('create')
+            console.log(totalPrice.value)
             axios.post('/reservation/check', {
                 start_date: formStartDate,
                 end_date: formEndDate,
                 user_id: page.props.auth.user.id,
-                car_id: page.props.car.id
+                car_id: page.props.car.id,
+                total_price: totalPrice.value,
             }).then((res) => {
                 reservationMessage.value = res.data.message
-                console.log(res.data.reservationId)
                 if (res.data.reservationId !== null) {
                     store.commit('SET_TEMPORARY_RESERVATION_ID', res.data.reservationId)
                     canMakeReservation.value = true
@@ -59,16 +59,15 @@ const onChangeStartDate = (e) => {
                 reservationMessage.value = "예약불가"
             })
         } else {
-            console.log('update')
             axios.post('/reservation/update', {
                 start_date: formStartDate,
                 end_date: formEndDate,
                 user_id: page.props.auth.user.id,
                 car_id: page.props.car.id,
-                reservation_id: store.state.temporaryReservationId
+                reservation_id: store.state.temporaryReservationId,
+                total_price: totalPrice.value
             }).then((res) => {
                 reservationMessage.value = res.data.message
-                console.log(res.data.reservationId)
                 if (res.data.reservationId !== null) {
                     store.commit('SET_TEMPORARY_RESERVATION_ID', res.data.reservationId)
                     canMakeReservation.value = true
@@ -96,15 +95,17 @@ const onChangeEndDate = (e) => {
         if (!reservationEndDate.value || dayjs(reservationStartDate.value).isAfter(dayjs(reservationEndDate.value)) || dayjs(reservationStartDate.value).isSame(dayjs(reservationEndDate.value))) {
             reservationStartDate.value = dayjs(e.target.value).subtract(1, 'day').format('YYYY-MM-DD');
         }
+        calculateTotalPrice()
         if (store.state.temporaryReservationId === -1) {
+
             axios.post('/reservation/check', {
                 start_date: formStartDate,
                 end_date: formEndDate,
                 user_id: page.props.auth.user.id,
-                car_id: page.props.car.id
+                car_id: page.props.car.id,
+                total_price: totalPrice.value
             }).then((res) => {
                 reservationMessage.value = res.data.message
-                console.log(res.data.reservationId)
                 if (res.data.reservationId !== null) {
                     store.commit('SET_TEMPORARY_RESERVATION_ID', res.data.reservationId)
                     canMakeReservation.value = res.data.message === "예약가능"
@@ -118,16 +119,15 @@ const onChangeEndDate = (e) => {
                 reservationMessage.value = "예약불가"
             })
         } else {
-            console.log('update')
             axios.post('/reservation/update', {
                 start_date: formStartDate,
                 end_date: formEndDate,
                 user_id: page.props.auth.user.id,
                 car_id: page.props.car.id,
-                reservation_id: store.state.temporaryReservationId
+                reservation_id: store.state.temporaryReservationId,
+                total_price: totalPrice.value
             }).then((res) => {
                 reservationMessage.value = res.data.message
-                console.log(res.data.reservationId)
                 if (res.data.reservationId !== null) {
                     store.commit('SET_TEMPORARY_RESERVATION_ID', res.data.reservationId)
                     canMakeReservation.value = res.data.message === "예약가능"
@@ -157,10 +157,13 @@ const calculateTotalPrice = () => {
     }
 }
 
+const onClickConfirmButton = () => {
+    router.get(route('reservation'), {
+       reservation_id: store.state.temporaryReservationId
+    });
+}
 
-watchEffect(() => {
-    calculateTotalPrice()
-})
+
 
 
 watch(reservationStartDate, (newValue, oldValue, onCleanup) => {
@@ -204,19 +207,19 @@ watch(reservationStartDate, (newValue, oldValue, onCleanup) => {
                 </div>
 
                 <div class="mb-4">
-                    총 가격: {{totalPrice.toLocaleString('ko')}} 원
+                    총 가격: {{ totalPrice.toLocaleString('ko') }} 원
                 </div>
 
-                <Link :href="route('reservation')">
-                    <div class="flex items-center justify-end mt-6 ">
-                        <button :class="{
+
+                <div class="flex items-center justify-end mt-6 ">
+                    <button @click="onClickConfirmButton" :class="{
                                 'bg-blue-500 text-white p-2 rounded w-full': canMakeReservation,
                                 'bg-gray-300 text-gray-500 p-2 rounded w-full cursor-not-allowed': !canMakeReservation
                             }"
-                                :disabled="!canMakeReservation">예약하기
-                        </button>
-                    </div>
-                </Link>
+                            :disabled="!canMakeReservation">예약하기
+                    </button>
+                </div>
+
 
             </div>
         </div>

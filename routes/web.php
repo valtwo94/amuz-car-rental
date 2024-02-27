@@ -23,16 +23,13 @@ Route::get('/', [CarController::class, 'list'])->name('list');
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->middleware(['auth', 'verified'])->name('dashboard');
+    Route::get('/dashboard', [ReservationController::class, 'list'])->name('dashboard');
     Route::get('/reservation', [ReservationController::class, 'create'])->name('reservation');
     Route::get('/create', [CarController::class, 'create'])->name('create');
     Route::post('/create', [CarController::class, 'store'])->name('cars.store');
-    Route::post('/reservation', [ReservationController::class, 'store'])->name('reservation.store');
+    Route::patch('/reservation', [ReservationController::class, 'store'])->name('reservation.store');
     Route::post('/reservation/check', [ReservationController::class, 'reservationCheck'])->name('reservation.check');
     Route::post('/reservation/update', [ReservationController::class, 'reservationUpdate'])->name('reservation.update');
-    Route::patch('/reservation', [ReservationController::class, 'updateToFixedReservation'])->name('reservation.update-to-fixed-reservation');
     Route::get('/show/{id}', [CarController::class, 'show'])->name('show');
 });
 
